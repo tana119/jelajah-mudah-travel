@@ -7,6 +7,7 @@ import { useToast } from "@/components/ui/use-toast";
 interface AuthContextType {
   user: User | null;
   login: (email: string, password: string) => Promise<boolean>;
+  register: (name: string, email: string, password: string) => Promise<boolean>;
   logout: () => void;
   isLoading: boolean;
 }
@@ -14,6 +15,7 @@ interface AuthContextType {
 export const AuthContext = createContext<AuthContextType>({
   user: null,
   login: async () => false,
+  register: async () => false,
   logout: () => {},
   isLoading: true,
 });
@@ -23,6 +25,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [registeredUsers, setRegisteredUsers] = useState<User[]>([]);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -31,6 +34,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     if (storedUser) {
       setUser(JSON.parse(storedUser));
     }
+    
+    // Load registered users from localStorage
+    const storedRegisteredUsers = localStorage.getItem("jm_registered_users");
+    if (storedRegisteredUsers) {
+      setRegisteredUsers(JSON.parse(storedRegisteredUsers));
+    }
+    
     setIsLoading(false);
   }, []);
 
@@ -41,15 +51,27 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       // Simulate API call delay
       await new Promise((resolve) => setTimeout(resolve, 1000));
       
-      // Find user by email
-      const foundUser = mockUsers.find((u) => u.email === email);
+      // Check in mock users first
+      const foundMockUser = mockUsers.find((u) => u.email === email);
       
-      if (foundUser && password === "password") {
-        setUser(foundUser);
-        localStorage.setItem("jm_user", JSON.stringify(foundUser));
+      // Then check in registered users
+      const foundRegisteredUser = registeredUsers.find((u) => u.email === email);
+      
+      if (foundMockUser && password === "password") {
+        setUser(foundMockUser);
+        localStorage.setItem("jm_user", JSON.stringify(foundMockUser));
         toast({
           title: "Login berhasil!",
-          description: `Selamat datang kembali, ${foundUser.name}!`,
+          description: `Selamat datang kembali, ${foundMockUser.name}!`,
+        });
+        return true;
+      } else if (foundRegisteredUser && password === foundRegisteredUser.password) {
+        // For registered users, we check actual password
+        setUser(foundRegisteredUser);
+        localStorage.setItem("jm_user", JSON.stringify(foundRegisteredUser));
+        toast({
+          title: "Login berhasil!",
+          description: `Selamat datang kembali, ${foundRegisteredUser.name}!`,
         });
         return true;
       } else {
@@ -65,6 +87,55 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   };
 
+  const register = async (name: string, email: string, password: string): Promise<boolean> => {
+    setIsLoading(true);
+    
+    try {
+      // Simulate API call delay
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      
+      // Check if user with this email already exists in mock data
+      const existsInMockData = mockUsers.some((u) => u.email === email);
+      
+      // Check if user with this email already exists in registered users
+      const existsInRegisteredUsers = registeredUsers.some((u) => u.email === email);
+      
+      if (existsInMockData || existsInRegisteredUsers) {
+        toast({
+          title: "Pendaftaran gagal!",
+          description: "Email sudah terdaftar.",
+          variant: "destructive",
+        });
+        return false;
+      }
+      
+      // Create new user
+      const newUser: User = {
+        id: `user-${Date.now()}`,
+        name,
+        email,
+        role: "customer" as UserRole,
+        password, // We store the password for simplicity (not secure)
+      };
+      
+      // Add to registered users
+      const updatedUsers = [...registeredUsers, newUser];
+      setRegisteredUsers(updatedUsers);
+      
+      // Store in localStorage
+      localStorage.setItem("jm_registered_users", JSON.stringify(updatedUsers));
+      
+      toast({
+        title: "Pendaftaran berhasil!",
+        description: "Silakan masuk dengan akun baru Anda.",
+      });
+      
+      return true;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const logout = () => {
     setUser(null);
     localStorage.removeItem("jm_user");
@@ -75,7 +146,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, isLoading }}>
+    <AuthContext.Provider value={{ user, login, register, logout, isLoading }}>
       {children}
     </AuthContext.Provider>
   );
