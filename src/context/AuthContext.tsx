@@ -1,4 +1,3 @@
-
 import React, { createContext, useState, useContext, useEffect } from "react";
 import { User, UserRole } from "@/types";
 import { mockUsers } from "@/data/mockData";
@@ -115,10 +114,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       }
       
       // Validate admin registration
-      if (role === "admin" && !email.endsWith("@jelajahmudah.com")) {
+      if (role === "admin" && 
+          !email.endsWith("@jelajahmudah.com") && 
+          !email.endsWith("@gmail.com")) {
         toast({
           title: "Pendaftaran Admin gagal!",
-          description: "Pendaftaran admin hanya bisa menggunakan email @jelajahmudah.com",
+          description: "Pendaftaran admin hanya bisa menggunakan email @jelajahmudah.com atau @gmail.com",
           variant: "destructive",
         });
         return false;

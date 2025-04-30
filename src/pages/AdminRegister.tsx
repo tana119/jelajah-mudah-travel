@@ -27,8 +27,9 @@ import { UserPlus } from "lucide-react";
 
 const registerSchema = z.object({
   name: z.string().min(2, "Nama minimal 2 karakter"),
-  email: z.string().email("Email tidak valid").refine((email) => email.endsWith('@jelajahmudah.com'), {
-    message: "Email admin harus menggunakan domain @jelajahmudah.com",
+  email: z.string().email("Email tidak valid").refine((email) => 
+    email.endsWith('@jelajahmudah.com') || email.endsWith('@gmail.com'), {
+    message: "Email admin harus menggunakan domain @jelajahmudah.com atau @gmail.com",
   }),
   password: z.string().min(6, "Password minimal 6 karakter"),
   confirmPassword: z.string().min(6, "Konfirmasi password minimal 6 karakter"),
