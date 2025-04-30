@@ -1,0 +1,123 @@
+
+import { Booking, TravelSchedule, User } from "@/types";
+
+export const mockUsers: User[] = [
+  {
+    id: "1",
+    name: "Admin User",
+    email: "admin@jelajahmudah.com",
+    role: "admin",
+  },
+  {
+    id: "2",
+    name: "John Doe",
+    email: "john@example.com",
+    role: "customer",
+  },
+  {
+    id: "3",
+    name: "Jane Smith",
+    email: "jane@example.com",
+    role: "customer",
+  },
+];
+
+export const mockSchedules: TravelSchedule[] = [
+  {
+    id: "1",
+    destination: "Jakarta - Bandung",
+    departureDate: "2025-05-15",
+    departureTime: "08:00",
+    capacity: 10,
+    remainingSeats: 4,
+    price: 120000,
+    createdAt: "2025-04-01T08:30:00Z",
+  },
+  {
+    id: "2",
+    destination: "Jakarta - Yogyakarta",
+    departureDate: "2025-05-15",
+    departureTime: "09:30",
+    capacity: 15,
+    remainingSeats: 8,
+    price: 250000,
+    createdAt: "2025-04-01T09:15:00Z",
+  },
+  {
+    id: "3",
+    destination: "Bandung - Jakarta",
+    departureDate: "2025-05-16",
+    departureTime: "07:00",
+    capacity: 10,
+    remainingSeats: 10,
+    price: 120000,
+    createdAt: "2025-04-02T10:00:00Z",
+  },
+  {
+    id: "4",
+    destination: "Yogyakarta - Jakarta",
+    departureDate: "2025-05-16",
+    departureTime: "14:30",
+    capacity: 15,
+    remainingSeats: 15,
+    price: 250000,
+    createdAt: "2025-04-02T11:20:00Z",
+  },
+  {
+    id: "5",
+    destination: "Jakarta - Surabaya",
+    departureDate: "2025-05-17",
+    departureTime: "06:00",
+    capacity: 12,
+    remainingSeats: 12,
+    price: 350000,
+    createdAt: "2025-04-03T08:45:00Z",
+  },
+];
+
+export const mockBookings: Booking[] = [
+  {
+    id: "1",
+    scheduleId: "1",
+    userId: "2",
+    userName: "John Doe",
+    userEmail: "john@example.com",
+    bookingDate: "2025-04-05T10:15:00Z",
+    passengerCount: 2,
+    totalPrice: 240000,
+    paymentStatus: "confirmed",
+  },
+  {
+    id: "2",
+    scheduleId: "1",
+    userId: "3",
+    userName: "Jane Smith",
+    userEmail: "jane@example.com",
+    bookingDate: "2025-04-06T14:30:00Z",
+    passengerCount: 4,
+    totalPrice: 480000,
+    paymentStatus: "confirmed",
+  },
+  {
+    id: "3",
+    scheduleId: "2",
+    userId: "2",
+    userName: "John Doe",
+    userEmail: "john@example.com",
+    bookingDate: "2025-04-07T09:45:00Z",
+    passengerCount: 1,
+    totalPrice: 250000,
+    paymentStatus: "pending",
+  },
+  {
+    id: "4",
+    scheduleId: "2",
+    userId: "3",
+    userName: "Jane Smith",
+    userEmail: "jane@example.com",
+    bookingDate: "2025-04-08T11:20:00Z",
+    passengerCount: 6,
+    totalPrice: 1500000,
+    paymentStatus: "cancelled",
+  },
+];
