@@ -7,7 +7,7 @@ import { useToast } from "@/components/ui/use-toast";
 interface AuthContextType {
   user: User | null;
   login: (email: string, password: string) => Promise<boolean>;
-  register: (name: string, email: string, password: string) => Promise<boolean>;
+  register: (name: string, email: string, password: string, role?: UserRole) => Promise<boolean>;
   logout: () => void;
   isLoading: boolean;
 }
@@ -87,7 +87,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   };
 
-  const register = async (name: string, email: string, password: string): Promise<boolean> => {
+  const register = async (
+    name: string, 
+    email: string, 
+    password: string, 
+    role: UserRole = "customer"
+  ): Promise<boolean> => {
     setIsLoading(true);
     
     try {
@@ -109,13 +114,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         return false;
       }
       
+      // Validate admin registration
+      if (role === "admin" && !email.endsWith("@jelajahmudah.com")) {
+        toast({
+          title: "Pendaftaran Admin gagal!",
+          description: "Pendaftaran admin hanya bisa menggunakan email @jelajahmudah.com",
+          variant: "destructive",
+        });
+        return false;
+      }
+      
       // Create new user
       const newUser: User = {
         id: `user-${Date.now()}`,
         name,
         email,
-        role: "customer" as UserRole,
-        password, // We store the password for simplicity (not secure)
+        role,
+        password,
+        registrationType: role === "admin" ? "admin" : "regular",
       };
       
       // Add to registered users

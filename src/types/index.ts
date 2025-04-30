@@ -7,6 +7,7 @@ export interface User {
   email: string;
   role: UserRole;
   password?: string;
+  registrationType?: "regular" | "admin";
 }
 
 export interface TravelSchedule {

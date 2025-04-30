@@ -36,6 +36,11 @@ const NavBar = () => {
             <div className="flex items-center space-x-4">
               <span className="hidden md:inline text-sm text-gray-600">
                 Halo, <span className="font-medium">{user.name}</span>
+                {user.role === "admin" && (
+                  <span className="ml-1 text-xs bg-brand-100 text-brand-700 px-2 py-1 rounded-full">
+                    Admin
+                  </span>
+                )}
               </span>
               <Button variant="outline" size="sm" onClick={logout}>
                 Logout

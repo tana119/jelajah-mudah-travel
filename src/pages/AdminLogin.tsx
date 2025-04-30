@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -32,10 +32,17 @@ const loginSchema = z.object({
 
 type LoginFormData = z.infer<typeof loginSchema>;
 
-const Login = () => {
-  const { login } = useAuth();
+const AdminLogin = () => {
+  const { login, user } = useAuth();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
+
+  // Redirect if already logged in as admin
+  useEffect(() => {
+    if (user && user.role === "admin") {
+      navigate("/admin");
+    }
+  }, [user, navigate]);
 
   const form = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
@@ -50,7 +57,7 @@ const Login = () => {
     try {
       const success = await login(data.email, data.password);
       if (success) {
-        navigate("/");
+        // We'll check the user role in the useEffect
       }
     } finally {
       setIsLoading(false);
@@ -63,10 +70,10 @@ const Login = () => {
         <Card className="border-brand-200 shadow-lg">
           <CardHeader className="space-y-1 bg-brand-50 rounded-t-md">
             <CardTitle className="text-2xl font-bold text-center text-brand-800">
-              Masuk ke Akun Anda
+              Admin Login
             </CardTitle>
             <CardDescription className="text-center text-brand-600">
-              Masukkan email dan password Anda untuk login
+              Masukkan email dan password admin untuk masuk
             </CardDescription>
           </CardHeader>
           <CardContent className="p-6">
@@ -77,9 +84,9 @@ const Login = () => {
                   name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Email</FormLabel>
+                      <FormLabel>Email Admin</FormLabel>
                       <FormControl>
-                        <Input placeholder="email@example.com" {...field} />
+                        <Input placeholder="admin@jelajahmudah.com" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -103,34 +110,34 @@ const Login = () => {
                   className="w-full"
                   disabled={isLoading}
                 >
-                  {isLoading ? "Memproses..." : (
+                  {isLoading ? (
+                    "Memproses..."
+                  ) : (
                     <>
                       <LogIn className="mr-2" />
-                      Masuk
+                      Masuk sebagai Admin
                     </>
                   )}
                 </Button>
               </form>
             </Form>
             <div className="mt-6 text-center text-sm">
-              Belum punya akun?{" "}
-              <Link to="/register" className="text-brand-600 font-medium hover:underline">
-                Daftar disini
+              Belum punya akun admin?{" "}
+              <Link to="/admin/register" className="text-brand-600 font-medium hover:underline">
+                Daftar Admin disini
               </Link>
             </div>
-            <div className="mt-4 text-center text-xs text-gray-500">
-              <p className="mb-2">
+            <div className="mt-4 text-center text-sm text-muted-foreground">
+              <p className="text-xs text-gray-500 mt-2">
                 Info login demo:
                 <br />
                 Admin: admin@jelajahmudah.com / password
-                <br />
-                Customer: john@example.com / password
               </p>
-              <p className="mt-4">
-                <Link to="/admin/login" className="text-brand-600 font-medium hover:underline">
-                  Login sebagai Admin
-                </Link>
-              </p>
+            </div>
+            <div className="mt-6 text-center">
+              <Link to="/login" className="text-sm text-brand-600 hover:underline">
+                Kembali ke Login Pengguna
+              </Link>
             </div>
           </CardContent>
         </Card>
@@ -139,4 +146,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default AdminLogin;
